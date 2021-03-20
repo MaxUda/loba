@@ -8,22 +8,32 @@ struct list{
     int num;
 };
 
+#ifdef LIST
+
 typedef struct{
     list* head;
 }stack_list;
 
-stack_list init_stack_list();
+void init_stack_list(stack_list* stack, int size);
 char stack_list_peek_char(stack_list* stack);
 int stack_list_peek_int(stack_list* stack);
 void stack_list_push(stack_list* stack, char value, int num);
 int stack_list_pop(stack_list* stack);
 void print_stack_list(stack_list* stack);
 void stack_list_delete(stack_list* stack);
+int check_if_empty(stack_list* stack);
 
-stack_list init_stack_list()
+void init_stack_list(stack_list* stack, int size)
 {
-    stack_list new_stack = {.head = NULL};
-    return new_stack;
+    stack->head = NULL;
+}
+
+int check_if_empty(stack_list* stack)
+{
+    if(stack->head == NULL)
+        return 1;
+    else
+        return 0;
 }
 
 char stack_list_peek_char(stack_list* stack)
@@ -79,57 +89,69 @@ void stack_list_delete(stack_list* stack)
         free(tmp);
     }//delete stack later
 }
-//---------------------------------------------------------
+
+#elif VECTOR
 
 typedef struct{
     int top, size;
     int* nums;
     char* chars;
-}stack_vector;
+}stack_list;
 
-stack_vector stack_vector_init(int size);
-int stack_vector_peek_int(stack_vector* stack);
-char stack_vector_peek_char(stack_vector* stack);
-int stack_vector_push(stack_vector* stack,char ch, int num);
-int stack_vector_pop(stack_vector* stack);
-void stack_vector_delete(stack_vector* stack);
+void init_stack_list(stack_list* stack, int size);
+char stack_list_peek_char(stack_list* stack);
+int stack_list_peek_int(stack_list* stack);
+void stack_list_push(stack_list* stack, char value, int num);
+int stack_list_pop(stack_list* stack);
+void print_stack_list(stack_list* stack);
+void stack_list_delete(stack_list* stack);
+int check_if_empty(stack_list* stack);
 
-stack_vector stack_vector_init(int size){
-    stack_vector new_stack = {.top = 0, .size = size, .nums = calloc(size, sizeof(int)), .chars = calloc(size, sizeof(char))};
-    return new_stack;
+void init_stack_list(stack_list* stack, int size){
+    stack->top = 0;
+    stack->size = size;
+    stack->nums = calloc(size, sizeof(int));
+    stack->chars = calloc(size, sizeof(char));
 }
 
-int stack_vector_peek_int(stack_vector* stack)
+int check_if_empty(stack_list* stack){
+        if(stack->top == 0)
+                return 1;
+        else
+                return 0;
+}
+
+
+int stack_list_peek_int(stack_list* stack)
 {
-    if(stack->top - 1 == 0){
+    if(stack->top == 0){
         printf("Error: can not read from empty stack\n");
-        //return -100000000;
+        //return;
     }
     return stack->nums[stack->top-1];
 }
 
-char stack_vector_peek_char(stack_vector* stack)
+char stack_list_peek_char(stack_list* stack)
 {
-    if(stack->top - 1 == 0){
+    if(stack->top == 0){
         printf("Error: can not read from empty stack\n");
-        //return -100000000;
+        //return;
     }
     return stack->chars[stack->top-1];
 }
 
-int stack_vector_push(stack_vector* stack,char ch, int num)
+void stack_list_push(stack_list* stack, char value, int num)
 {
     if(stack->top == stack->size){
         printf("Error: stack overflow\n");
-        return 0;
+        return;
     }
     stack->nums[stack->top] = num;
-    stack->chars[stack->top] = num;
+    stack->chars[stack->top] = value;
     stack->top++;
-    return 1;
 }
 
-int stack_vector_pop(stack_vector* stack)
+int stack_list_pop(stack_list* stack)
 {
     if(stack->top == 0){
         printf("Error: cannot pop an empty stack\n");
@@ -137,10 +159,9 @@ int stack_vector_pop(stack_vector* stack)
     stack->top--;
 }
 
-void stack_vector_delete(stack_vector* stack)
+void stack_list_delete(stack_list* stack)
 {
     free(stack->nums);
     free(stack->chars);
 }
-
-
+#endif
